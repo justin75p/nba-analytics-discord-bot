@@ -45,20 +45,24 @@ async def points_last(ctx, games: int, *, player_name):
     games_data_frame = games_this_season.get_data_frames()[0]
 
     last_n_games = games_data_frame.head(games)
-    # Format the games to display nicely
-    output = f"{player['full_name']} - Last {games} Games:\n"
-    output += "```\n"
-    output += "Date          Opponent        PTS\n"
-    output += "-" * 33 + "\n"
+    if games > 15:
+        # Only show average for large requests to avoid long messages
+        await ctx.send(f"```Over the past {games} games, {player['full_name']} has averaged {round(last_n_games['PTS'].mean(), 1)} points per game.\n```")
+    else:
+        # Format the games to display nicely
+        output = f"{player['full_name']} - Last {games} Regular Season Games:\n"
+        output += "```\n"
+        output += "Date          Opponent        PTS\n"
+        output += "-" * 33 + "\n"
 
-    for _, game in last_n_games.iterrows():
-        date = game['GAME_DATE']
-        matchup = game['MATCHUP']
-        points = game['PTS']
-        output += f"{date}  {matchup:<16}{points:>3}\n"
-    output += f"Over the past {games} games, {player['full_name']} has averaged {last_n_games['PTS'].mean()} points per game.\n"
-    output += "```"
-    await ctx.send(output)
+        for _, game in last_n_games.iterrows():
+            date = game['GAME_DATE']
+            matchup = game['MATCHUP']
+            points = game['PTS']
+            output += f"{date}  {matchup:<16}{points:>3}\n"
+        output += f"Over the past {games} games, {player['full_name']} has averaged {round(last_n_games['PTS'].mean(), 1)} points per game.\n"
+        output += "```"
+        await ctx.send(output)
 
 # Helper Method used to search for an active player
 async def find_active_player(player_name):
