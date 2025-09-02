@@ -7,6 +7,10 @@ import os
 from nba_api.stats.endpoints import playergamelog
 from nba_api.stats.static import players
 
+# Hardcode current season, only needs an update once a year
+CURRENT_SEASON = "2024-25"
+SEASON_TYPE = "Regular Season"
+
 # Load token
 load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
@@ -26,24 +30,48 @@ async def on_ready():
 async def echo(ctx, *, arg):
     await ctx.send(arg)
 
+# Get a player's points and average over their last N games
 @bot.command()
-async def player(ctx, *, player_name):
+async def points_last(ctx, games: int, *, player_name):
+    # Look up the player
+    player = await find_active_player(player_name)
+    if not player:
+        await ctx.send(f"Could not find player named {player_name}.")
+        return
+    id = player['id']
+
+    # Get the games they've played this season
+    games_this_season = playergamelog.PlayerGameLog(player_id = id, season = CURRENT_SEASON, season_type_all_star = SEASON_TYPE)
+    games_data_frame = games_this_season.get_data_frames()[0]
+
+    last_n_games = games_data_frame.head(games)
+    # Format the games to display nicely
+    output = f"{player['full_name']} - Last {games} Games:\n"
+    output += "```\n"
+    output += "Date          Opponent        PTS\n"
+    output += "-" * 33 + "\n"
+
+    for _, game in last_n_games.iterrows():
+        date = game['GAME_DATE']
+        matchup = game['MATCHUP']
+        points = game['PTS']
+        output += f"{date}  {matchup:<16}{points:>3}\n"
+    output += f"Over the past {games} games, {player['full_name']} has averaged {last_n_games['PTS'].mean()} points per game.\n"
+    output += "```"
+    await ctx.send(output)
+
+# Helper Method used to search for an active player
+async def find_active_player(player_name):
     # Find a player by their full name
     player_list = players.find_players_by_full_name(player_name)
     if not player_list:
-        await ctx.send(f"Player {player_name} not found.")
-        return
+        return None
 
     active_players = [player for player in player_list if player['is_active']]
     if not active_players:
-        await ctx.send(f"No active player named {player_name} found.")
-        return
+        return None
     
-    # As of 2025, no active players share the exact same names
-    player = active_players[0]
-    player_id = player['id']
-
-    await ctx.send(f"Found active player {player['full_name']} with id {player_id}")
-
+    # As of 2025, no active players share the exact same names, so return the first player
+    return active_players[0]
 
 bot.run(token = token, log_handler = handler, log_level = logging.DEBUG)
