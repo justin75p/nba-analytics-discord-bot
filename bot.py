@@ -4,7 +4,7 @@ import logging
 from dotenv import load_dotenv
 import os
 
-from nba_api.stats.endpoints import playergamelog
+from nba_api.stats.endpoints import playergamelog, leaguedashteamstats
 from nba_api.stats.static import players
 
 # Hardcode current season, only needs an update once a year
@@ -64,8 +64,14 @@ async def points_last(ctx, games: int, *, player_name):
         output += "```"
         await ctx.send(output)
 
-# Helper Method used to search for an active player
-async def find_active_player(player_name):
+# Helper method used to search for a team (case insensitive)
+# Possible use cases: Lakers, LAL, Los Angeles, Los Angeles Lakers
+def find_team(team_name):
+    return None
+
+
+# Helper method used to search for an active player (case insensitive)
+def find_active_player(player_name):
     # Find a player by their full name
     player_list = players.find_players_by_full_name(player_name)
     if not player_list:
