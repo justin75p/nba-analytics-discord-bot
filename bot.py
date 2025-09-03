@@ -30,9 +30,9 @@ async def on_ready():
 async def echo(ctx, *, arg):
     await ctx.send(arg)
 
-# Get a player's points and average over their last N games
+# Command to get a player's points and average over their last N games
 @bot.command()
-async def points_last(ctx, games: int, *, player_name):
+async def points_last(ctx, games: int, *, player_name: str):
     # Look up the player
     player = find_active_player(player_name)
     if not player:
@@ -63,6 +63,24 @@ async def points_last(ctx, games: int, *, player_name):
         output += f"Over the past {min(games, len(last_n_games))} games, {player['full_name']} has averaged {round(last_n_games['PTS'].mean(), 1)} points per game.\n"
         output += "```"
         await ctx.send(output)
+
+# Command that gets a team's offensive and defensive stat rankings
+@bot.command()
+async def team(ctx, *, team_name: str):
+    # Depending on the search term, there may be multiple teams
+    potential_teams = find_team(team_name)
+    if not potential_teams:
+        await ctx.send(f"Could not find team using search term \"{team_name}\".")
+        return
+    elif len(potential_teams) > 1:
+        await ctx.send("Search term too broad, please be more specific.")
+        return
+    # If there was only one match, the team was found correctly
+    team = potential_teams[0]
+
+    # TODO: get the team's offensive/defensive stat rankings, and return them as a cleanly-formatted message
+
+    await ctx.send(f"Found team {team['full_name']}!")
 
 # Helper method used to search for a team (case insensitive)
 # Possible use cases: Lakers, LAL, Los Angeles Lakers
