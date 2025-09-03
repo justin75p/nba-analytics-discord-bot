@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import os
 
 from nba_api.stats.endpoints import playergamelog, leaguedashteamstats
-from nba_api.stats.static import players
+from nba_api.stats.static import players, teams
 
 # Hardcode current season, only needs an update once a year
 CURRENT_SEASON = "2024-25"
@@ -34,7 +34,7 @@ async def echo(ctx, *, arg):
 @bot.command()
 async def points_last(ctx, games: int, *, player_name):
     # Look up the player
-    player = await find_active_player(player_name)
+    player = find_active_player(player_name)
     if not player:
         await ctx.send(f"Could not find player named {player_name}.")
         return
@@ -65,13 +65,24 @@ async def points_last(ctx, games: int, *, player_name):
         await ctx.send(output)
 
 # Helper method used to search for a team (case insensitive)
-# Possible use cases: Lakers, LAL, Los Angeles, Los Angeles Lakers
-def find_team(team_name):
-    return None
+# Possible use cases: Lakers, LAL, Los Angeles Lakers
+# Potentially returns multiple teams, i.e. searching "Los Angeles" gives two teams
+def find_team(team_name: str):
+    team_name = team_name.lower()
 
+    teams_list = teams.get_teams()
+    matches = []
+    for team in teams_list:
+        if (team_name in team['full_name'].lower() or
+            team_name == team['abbreviation'].lower() or
+            team_name in team['nickname'].lower() or 
+            team_name in team['city'].lower() or 
+            team_name in team['state'].lower()):
+                matches.append(team)
+    return matches
 
 # Helper method used to search for an active player (case insensitive)
-def find_active_player(player_name):
+def find_active_player(player_name: str):
     # Find a player by their full name
     player_list = players.find_players_by_full_name(player_name)
     if not player_list:
