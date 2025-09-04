@@ -4,7 +4,7 @@ import logging
 from dotenv import load_dotenv
 import os
 
-from nba_api.stats.endpoints import playergamelog, leaguedashteamstats
+from nba_api.stats.endpoints import playergamelog, teaminfocommon
 from nba_api.stats.static import players, teams
 
 # Hardcode current season, only needs an update once a year
@@ -42,7 +42,7 @@ async def points_last(ctx, games: int, *, player_name: str):
 
     # Get the games they've played this season
     games_this_season = playergamelog.PlayerGameLog(player_id = id, season = CURRENT_SEASON, season_type_all_star = SEASON_TYPE)
-    games_data_frame = games_this_season.get_data_frames()[0]
+    games_data_frame = games_this_season.player_game_log.get_data_frame()
 
     last_n_games = games_data_frame.head(games)
     if games > 15:
@@ -76,11 +76,23 @@ async def team(ctx, *, team_name: str):
         await ctx.send("Search term too broad, please be more specific.")
         return
     # If there was only one match, the team was found correctly
-    team = potential_teams[0]
+    team_id = potential_teams[0]['id']
 
-    # TODO: get the team's offensive/defensive stat rankings, and return them as a cleanly-formatted message
+    # Get the season rankings for this team
+    team_info = teaminfocommon.TeamInfoCommon(team_id = team_id, league_id = "00", season_nullable = CURRENT_SEASON, season_type_nullable = SEASON_TYPE)
+    # Get the only row of data since only one team
+    team_season_ranks_data = team_info.team_season_ranks.get_data_frame().iloc[0]
 
-    await ctx.send(f"Found team {team['full_name']}!")
+    # Format the output message nicely
+    output = f"Season Rankings for the {potential_teams[0]['full_name']}:"
+    output += "```\n"
+    output += f"{team_season_ranks_data['PTS_RANK']}th in PPG ({team_season_ranks_data['PTS_PG']})\n"
+    output += f"{team_season_ranks_data['REB_RANK']}th in RPG ({team_season_ranks_data['REB_PG']})\n"
+    output += f"{team_season_ranks_data['AST_RANK']}th in APG ({team_season_ranks_data['AST_PG']})\n"
+    output += f"{team_season_ranks_data['OPP_PTS_RANK']}th in OPP PTG ({team_season_ranks_data['OPP_PTS_PG']})\n"
+    output += "```"
+
+    await ctx.send(output)
 
 # Helper method used to search for a team (case insensitive)
 # Possible use cases: Lakers, LAL, Los Angeles Lakers
