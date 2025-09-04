@@ -94,10 +94,22 @@ async def player_vs(ctx, team: str, *, player_name: str):
     output += "Date          PTS     REB     AST     FGM     FGA     FG_PCT     FG3M     FG3_PCT     FTM     FTA     FT_PCT\n"
 
     for _, game in player_game_log.iterrows():
-        if game['MATCHUP'] == team_abbreviation:
-            output += ""
+        if game['MATCHUP'] == team_abbreviation.upper():
+            date = game['GAME_DATE']
+            pts = game['PTS']
+            reb = game['REB']
+            ast = game['AST']
+            fgm = game['FGM']
+            fga = game['FGA']
+            fg_pct = game['FG_PCT']
+            fg3m = game['FG3M']
+            fg3a = game['FG3A']
+            fg3_pct = game['FG3_PCT']
+            ftm = game['FTM']
+            fta = game['FTA']
+            ft_pct = game['FT_PCT']
 
-
+            output += f"{date}   {pts:3>}     {reb:3>}     {ast:3>}     {fgm:3>}     {fga:3>}     {fg_pct:3>}     {fg3m:3>}     {fg3a:3>}     {fg3_pct:3>}     {ftm:3>}     {fta:3>}     {ft_pct:3>}\n"
     output += "```"
     await ctx.send(output)    
 
