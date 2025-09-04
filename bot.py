@@ -69,7 +69,37 @@ async def points_last(ctx, games: int, *, player_name: str):
 # Command that shows a player's performance against a specific team this season
 @bot.command()
 async def player_vs(ctx, team: str, *, player_name: str):
-    
+    # Look up the player
+    player = find_active_player(player_name)
+    if not player:
+        await ctx.send(f"Could not find player named {player_name}.")
+        return
+    player_id = player['id']
+
+    # Look up the team
+    potential_teams = find_team(team_name=team)
+    if not potential_teams:
+        await ctx.send(f"Could not find team using search term \"{team}\".")
+        return
+    elif len(potential_teams) > 1:
+        await ctx.send("Search term too broad, please be more specific.")
+        return
+    # If there was only one match, the team was found correctly
+    team_abbreviation = potential_teams[0]['abbreviation']
+
+    player_game_log = get_games_played(player_id=player_id)
+
+    output = f"{player['full_name']} - Head to Head vs. {potential_teams[0]['full_name']}\n"
+    output += "```"
+    output += "Date          PTS     REB     AST     FGM     FGA     FG_PCT     FG3M     FG3_PCT     FTM     FTA     FT_PCT\n"
+
+    for _, game in player_game_log.iterrows():
+        if game['MATCHUP'] == team_abbreviation:
+            output += ""
+
+
+    output += "```"
+    await ctx.send(output)    
 
 # Command that shows a team's offensive and defensive stat rankings this season
 @bot.command()
