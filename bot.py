@@ -11,6 +11,9 @@ from nba_api.stats.static import players, teams
 CURRENT_SEASON = "2024-25"
 SEASON_TYPE = "Regular Season"
 
+# TODO: Implement caching of data from API calls for better performance
+cache = {}
+
 # Load token
 load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
@@ -41,8 +44,7 @@ async def points_last(ctx, games: int, *, player_name: str):
     id = player['id']
 
     # Get the games they've played this season
-    games_this_season = playergamelog.PlayerGameLog(player_id = id, season = CURRENT_SEASON, season_type_all_star = SEASON_TYPE)
-    games_data_frame = games_this_season.player_game_log.get_data_frame()
+    games_data_frame = get_games_played(id)
 
     last_n_games = games_data_frame.head(games)
     if games > 15:
@@ -126,5 +128,10 @@ def find_active_player(player_name: str):
     
     # As of 2025, no active players share the exact same names, so return the first player
     return active_players[0]
+
+# Helper method that returns a DataFrame of all games a player has played in the current season.
+def get_games_played(player_id: int):
+    games_this_season = playergamelog.PlayerGameLog(player_id = player_id, season = CURRENT_SEASON, season_type_all_star = SEASON_TYPE)
+    return games_this_season.player_game_log.get_data_frame()
 
 bot.run(token = token, log_handler = handler, log_level = logging.DEBUG)
