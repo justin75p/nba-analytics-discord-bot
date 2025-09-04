@@ -4,7 +4,7 @@ import logging
 from dotenv import load_dotenv
 import os
 
-from nba_api.stats.endpoints import playergamelog, teaminfocommon
+from nba_api.stats.endpoints import playergamelog, teaminfocommon, leaguedashteamstats
 from nba_api.stats.static import players, teams
 
 # Hardcode current season, only needs an update once a year
@@ -91,6 +91,8 @@ async def team(ctx, *, team_name: str):
     output += f"{team_season_ranks_data['AST_RANK']}th in APG ({team_season_ranks_data['AST_PG']})\n"
     output += f"{team_season_ranks_data['OPP_PTS_RANK']}th in OPP PTG ({team_season_ranks_data['OPP_PTS_PG']})\n"
     output += "```"
+
+    # TODO: Show more advanced stat rankings using LeagueDashTeamStats (in the future)
 
     await ctx.send(output)
 
