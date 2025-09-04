@@ -33,7 +33,7 @@ async def on_ready():
 async def echo(ctx, *, arg):
     await ctx.send(arg)
 
-# Command to get a player's points and average over their last N games
+# Command to show a player's points and average over their last N games this season
 @bot.command()
 async def points_last(ctx, games: int, *, player_name: str):
     # Look up the player
@@ -66,7 +66,12 @@ async def points_last(ctx, games: int, *, player_name: str):
         output += "```"
         await ctx.send(output)
 
-# Command that gets a team's offensive and defensive stat rankings
+# Command that shows a player's performance against a specific team this season
+@bot.command()
+async def player_vs(ctx, team: str, *, player_name: str):
+    
+
+# Command that shows a team's offensive and defensive stat rankings this season
 @bot.command()
 async def team(ctx, *, team_name: str):
     # Depending on the search term, there may be multiple teams
