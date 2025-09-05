@@ -89,27 +89,28 @@ async def player_vs(ctx, team: str, *, player_name: str):
 
     player_game_log = get_games_played(player_id=player_id)
 
-    output = f"{player['full_name']} - Head to Head vs. {potential_teams[0]['full_name']}\n"
+    output = f"{player['full_name']} - Head to Head vs. {potential_teams[0]['full_name']} this season:\n"
     output += "```"
-    output += "Date          PTS     REB     AST     FGM     FGA     FG_PCT     FG3M     FG3_PCT     FTM     FTA     FT_PCT\n"
+    output += "Date            PTS   REB   AST   FGM   FGA   FG_PCT   FG3M   FG3A   FG3_PCT   FTM   FTA   FT_PCT\n"
+    output += "-" * 97 + "\n"
 
     for _, game in player_game_log.iterrows():
-        if game['MATCHUP'] == team_abbreviation.upper():
+        if team_abbreviation in game['MATCHUP']:
             date = game['GAME_DATE']
             pts = game['PTS']
             reb = game['REB']
             ast = game['AST']
             fgm = game['FGM']
             fga = game['FGA']
-            fg_pct = game['FG_PCT']
+            fg_pct = f"{game['FG_PCT']:.1%}"
             fg3m = game['FG3M']
             fg3a = game['FG3A']
-            fg3_pct = game['FG3_PCT']
+            fg3_pct = f"{game['FG3_PCT']:.1%}"
             ftm = game['FTM']
             fta = game['FTA']
-            ft_pct = game['FT_PCT']
+            ft_pct = f"{game['FT_PCT']:.1%}"
 
-            output += f"{date}   {pts:3>}     {reb:3>}     {ast:3>}     {fgm:3>}     {fga:3>}     {fg_pct:3>}     {fg3m:3>}     {fg3a:3>}     {fg3_pct:3>}     {ftm:3>}     {fta:3>}     {ft_pct:3>}\n"
+            output += f"{date}    {pts:>3}   {reb:>3}   {ast:>3}   {fgm:>3}   {fga:>3}   {fg_pct:>6}   {fg3m:>4}   {fg3a:>4}    {fg3_pct:>6}   {ftm:>3}   {fta:>3}   {ft_pct:>6}\n"
     output += "```"
     await ctx.send(output)    
 
