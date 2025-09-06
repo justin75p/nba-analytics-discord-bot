@@ -4,7 +4,7 @@ import logging
 from dotenv import load_dotenv
 import os
 
-from nba_api.stats.endpoints import playergamelog, teaminfocommon, leaguedashteamstats
+from nba_api.stats.endpoints import playergamelog, teaminfocommon, leaguedashteamstats, playerprofilev2
 from nba_api.stats.static import players, teams
 
 # Hardcode current season, only needs an update once a year
@@ -114,6 +114,13 @@ async def player_vs(ctx, team: str, *, player_name: str):
 
             output += f"{date}    {pts:>3}   {reb:>3}   {ast:>3}   {fgm:>3}   {fga:>3}   {fg_pct:>6}   {fg3m:>4}   {fg3a:>4}    {fg3_pct:>6}   {ftm:>3}   {fta:>3}   {ft_pct:>6}\n"
     output += "```"
+    await ctx.send(output)
+
+# Command that displays a player's stat averages along with their rankings this season
+# Uses PlayerProfileV2 endpoint with SeasonRankingsRegularSeason and SeasonTotalsRegularSeason dataset 
+@bot.command()
+async def player_stats(ctx, *, player_name: str):
+    output = ""
     await ctx.send(output)    
 
 # Command that shows a team's offensive and defensive stat rankings this season
