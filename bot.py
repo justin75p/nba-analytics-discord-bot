@@ -34,6 +34,7 @@ async def echo(ctx, *, arg):
     await ctx.send(arg)
 
 # Command to show a player's points and average over their last N games this season
+# Uses PlayerGameLog endpoint
 @bot.command()
 async def points_last(ctx, games: int, *, player_name: str):
     # Look up the player
@@ -67,6 +68,7 @@ async def points_last(ctx, games: int, *, player_name: str):
         await ctx.send(output)
 
 # Command that shows a player's performance against a specific team this season
+# Uses PlayerGameLog endpoint
 @bot.command()
 async def player_vs(ctx, team: str, *, player_name: str):
     # Look up the player
@@ -115,6 +117,7 @@ async def player_vs(ctx, team: str, *, player_name: str):
     await ctx.send(output)    
 
 # Command that shows a team's offensive and defensive stat rankings this season
+# Uses TeamInfoCommon endpoint
 @bot.command()
 async def team(ctx, *, team_name: str):
     # Depending on the search term, there may be multiple teams
@@ -147,6 +150,7 @@ async def team(ctx, *, team_name: str):
     await ctx.send(output)
 
 # Helper method used to search for a team (case insensitive)
+# Uses static team database
 # Possible use cases: Lakers, LAL, Los Angeles Lakers
 # Potentially returns multiple teams, i.e. searching "Los Angeles" gives two teams
 def find_team(team_name: str):
@@ -164,6 +168,7 @@ def find_team(team_name: str):
     return matches
 
 # Helper method used to search for an active player (case insensitive)
+# Uses static player database
 def find_active_player(player_name: str):
     # Find a player by their full name
     player_list = players.find_players_by_full_name(player_name)
@@ -178,6 +183,7 @@ def find_active_player(player_name: str):
     return active_players[0]
 
 # Helper method that returns a DataFrame of all games a player has played in the current season.
+# Uses PlayerGameLog endpoint
 def get_games_played(player_id: int):
     games_this_season = playergamelog.PlayerGameLog(player_id = player_id, season = CURRENT_SEASON, season_type_all_star = SEASON_TYPE)
     return games_this_season.player_game_log.get_data_frame()
