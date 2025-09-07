@@ -120,6 +120,20 @@ async def player_vs(ctx, team: str, *, player_name: str):
 # Uses PlayerProfileV2 endpoint with SeasonRankingsRegularSeason and SeasonTotalsRegularSeason dataset 
 @bot.command()
 async def player_stats(ctx, *, player_name: str):
+    # Look up the player
+    player = find_active_player(player_name)
+    if not player:
+        await ctx.send(f"Could not find player named {player_name}.")
+        return
+    player_id = player['id']
+
+    # Get the player's profile from the endpoint
+    player_profile = playerprofilev2.PlayerProfileV2(player_id=player_id, per_mode36="PerGame")
+
+    # Get their season stat averages and stat rankings as DataSets, then convert them to DataFrame
+    season_stats = player_profile.season_totals_regular_season.get_data_frame()
+    season_rankings = player_profile.season_rankings_regular_season.get_data_frame()
+
     output = ""
     await ctx.send(output)    
 
