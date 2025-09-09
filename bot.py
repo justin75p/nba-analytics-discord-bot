@@ -33,6 +33,17 @@ async def on_ready():
 async def echo(ctx, *, arg):
     await ctx.send(arg)
 
+@bot.command()
+async def commands(ctx):
+    output = "NBA Bot Commands:\n"
+    output += "```"
+    output += "!points_last <num_games> <player>        - Show player's points over last N games this season\n"
+    output += "!player_vs <team> <player>               - Show player's performance vs specific team this season\n"
+    output += "!player_stats <player>                   - Show player's overall stat averages and rankings this season\n"
+    output += "!team <team>                             - Show team's offensive and defensive rankings this season"
+    output += "```"
+    await ctx.send(output)
+
 # Command to show a player's points and average over their last N games this season
 # Uses PlayerGameLog endpoint
 @bot.command()
