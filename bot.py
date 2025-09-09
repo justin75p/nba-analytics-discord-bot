@@ -131,8 +131,8 @@ async def player_stats(ctx, *, player_name: str):
     player_profile = playerprofilev2.PlayerProfileV2(player_id=player_id, per_mode36="PerGame")
 
     # Get their season stat averages and stat rankings as DataSets, then convert them to DataFrame
-    season_stats = player_profile.season_totals_regular_season.get_data_frame()
-    season_rankings = player_profile.season_rankings_regular_season.get_data_frame()
+    season_stats = player_profile.season_totals_regular_season.get_data_frame().iloc[0]
+    season_rankings = player_profile.season_rankings_regular_season.get_data_frame().iloc[0]
 
     output = ""
     await ctx.send(output)    
@@ -160,10 +160,10 @@ async def team(ctx, *, team_name: str):
     # Format the output message nicely
     output = f"Season Rankings for the {potential_teams[0]['full_name']}:"
     output += "```\n"
-    output += f"{team_season_ranks_data['PTS_RANK']}th in PPG ({team_season_ranks_data['PTS_PG']})\n"
-    output += f"{team_season_ranks_data['REB_RANK']}th in RPG ({team_season_ranks_data['REB_PG']})\n"
-    output += f"{team_season_ranks_data['AST_RANK']}th in APG ({team_season_ranks_data['AST_PG']})\n"
-    output += f"{team_season_ranks_data['OPP_PTS_RANK']}th in OPP PTG ({team_season_ranks_data['OPP_PTS_PG']})\n"
+    output += f"#{team_season_ranks_data['PTS_RANK']} in PPG ({team_season_ranks_data['PTS_PG']})\n"
+    output += f"#{team_season_ranks_data['REB_RANK']} in RPG ({team_season_ranks_data['REB_PG']})\n"
+    output += f"#{team_season_ranks_data['AST_RANK']} in APG ({team_season_ranks_data['AST_PG']})\n"
+    output += f"#{team_season_ranks_data['OPP_PTS_RANK']} in OPP PTG ({team_season_ranks_data['OPP_PTS_PG']})\n"
     output += "```"
 
     # TODO: Show more advanced stat rankings using LeagueDashTeamStats (in the future)
