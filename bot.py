@@ -181,6 +181,14 @@ async def team(ctx, *, team_name: str):
 
     await ctx.send(output)
 
+    # Command that shows a team's roster of players
+    # Uses CommonTeamRoster endpoint and its dataset containing the players on the team
+    @bot.command()
+    async def roster(ctx, *, team_name: str):
+        # TODO: implement method
+        output = ""
+        await ctx.send(output)
+
 # Helper method used to search for a team (case insensitive)
 # Uses static team database
 # Possible use cases: Lakers, LAL, Los Angeles Lakers
