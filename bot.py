@@ -4,7 +4,7 @@ import logging
 from dotenv import load_dotenv
 import os
 
-from nba_api.stats.endpoints import playergamelog, teaminfocommon, leaguedashteamstats, playerprofilev2
+from nba_api.stats.endpoints import playergamelog, teaminfocommon, leaguedashteamstats, playerprofilev2, commonteamroster
 from nba_api.stats.static import players, teams
 
 # Hardcode current season, only needs an update once a year
@@ -185,7 +185,22 @@ async def team(ctx, *, team_name: str):
     # Uses CommonTeamRoster endpoint and its dataset containing the players on the team
     @bot.command()
     async def roster(ctx, *, team_name: str):
-        # TODO: implement method
+        # Look for team
+        potential_teams = find_team(team_name)
+        if not potential_teams:
+            await ctx.send(f"Could not find team using search term \"{team_name}\".")
+            return
+        elif len(potential_teams) > 1:
+            await ctx.send("Search term too broad, please be more specific.")
+            return
+        # If there was only one match, the team was found correctly
+        team_id = potential_teams[0]['id']
+
+        # Get CommonTeamRoster object and its DataFrame
+        roster_object = commonteamroster.CommonTeamRoster(team_id=team_id, season=CURRENT_SEASON)
+        roster = roster_object.common_team_roster.get_data_frame()
+
+
         output = ""
         await ctx.send(output)
 
