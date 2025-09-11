@@ -209,7 +209,7 @@ async def roster(ctx, *, team_name: str):
         height = player['HEIGHT']
         weight = player['WEIGHT']
         age = player['AGE']
-        output += f"#{number} {name} {position} {age} {height} {weight}\n"
+        output += f"#{number} {name} {position} {int(age)} {height} {weight}\n"
     output += "```"
     await ctx.send(output)
 
