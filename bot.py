@@ -178,31 +178,40 @@ async def team(ctx, *, team_name: str):
     output += "```"
 
     # TODO: Show more advanced stat rankings using LeagueDashTeamStats (in the future)
-
     await ctx.send(output)
 
-    # Command that shows a team's roster of players
-    # Uses CommonTeamRoster endpoint and its dataset containing the players on the team
-    @bot.command()
-    async def roster(ctx, *, team_name: str):
-        # Look for team
-        potential_teams = find_team(team_name)
-        if not potential_teams:
-            await ctx.send(f"Could not find team using search term \"{team_name}\".")
-            return
-        elif len(potential_teams) > 1:
-            await ctx.send("Search term too broad, please be more specific.")
-            return
-        # If there was only one match, the team was found correctly
-        team_id = potential_teams[0]['id']
+# Command that shows a team's roster of players
+# Uses CommonTeamRoster endpoint and its dataset containing the players on the team
+@bot.command()
+async def roster(ctx, *, team_name: str):
+    # Look for team
+    potential_teams = find_team(team_name)
+    if not potential_teams:
+        await ctx.send(f"Could not find team using search term \"{team_name}\".")
+        return
+    elif len(potential_teams) > 1:
+        await ctx.send("Search term too broad, please be more specific.")
+        return
+    # If there was only one match, the team was found correctly
+    team_id = potential_teams[0]['id']
 
-        # Get CommonTeamRoster object and its DataFrame
-        roster_object = commonteamroster.CommonTeamRoster(team_id=team_id, season=CURRENT_SEASON)
-        roster = roster_object.common_team_roster.get_data_frame()
+    # Get CommonTeamRoster object and its DataFrame
+    roster_object = commonteamroster.CommonTeamRoster(team_id=team_id, season=CURRENT_SEASON)
+    roster = roster_object.common_team_roster.get_data_frame()
 
-
-        output = ""
-        await ctx.send(output)
+    # TODO: format output
+    output = f"Roster information for the {potential_teams[0]['full_name']}:"
+    output += "```\n"
+    for _, player in roster.iterrows():
+        name = player['PLAYER']
+        number = player['NUM']
+        position = player['POSITION']
+        height = player['HEIGHT']
+        weight = player['WEIGHT']
+        age = player['AGE']
+        output += f"#{number} {name} {position} {age} {height} {weight}\n"
+    output += "```"
+    await ctx.send(output)
 
 # Helper method used to search for a team (case insensitive)
 # Uses static team database
