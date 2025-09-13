@@ -3,6 +3,7 @@ from discord.ext import commands
 import logging
 from dotenv import load_dotenv
 import os
+import requests_cache
 
 from nba_api.stats.endpoints import playergamelog, teaminfocommon, leaguedashteamstats, playerprofilev2, commonteamroster
 from nba_api.stats.static import players, teams
@@ -11,8 +12,7 @@ from nba_api.stats.static import players, teams
 CURRENT_SEASON = "2024-25"
 SEASON_TYPE = "Regular Season"
 
-# TODO: Implement caching of data from API calls for better performance
-cache = {}
+requests_cache.install_cache('nba_bot_cache', expire_after=3600)
 
 # Load token
 load_dotenv()
