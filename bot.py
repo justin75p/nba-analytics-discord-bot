@@ -202,6 +202,8 @@ async def roster(ctx, *, team_name: str):
     # TODO: format output
     output = f"Roster information for the {potential_teams[0]['full_name']}:"
     output += "```\n"
+    output += "NUM     NAME                       POS   AGE    HGHT    WGHT\n"
+    output += "-" * 60 + '\n'
     for _, player in roster.iterrows():
         name = player['PLAYER']
         number = player['NUM']
@@ -209,7 +211,7 @@ async def roster(ctx, *, team_name: str):
         height = player['HEIGHT']
         weight = player['WEIGHT']
         age = player['AGE']
-        output += f"#{number} {name} {position} {int(age)} {height} {weight}\n"
+        output += f"#{number:>3}    {name:<25} {position:>3}    {int(age):>2}    {height:>4}     {weight:>3}\n"
     output += "```"
     await ctx.send(output)
 
