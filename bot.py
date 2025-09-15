@@ -41,6 +41,7 @@ async def commands(ctx):
     output += "!player_vs <team> <player>               - Show player's performance vs specific team this season\n"
     output += "!player_stats <player>                   - Show player's overall stat averages and rankings this season\n"
     output += "!team <team>                             - Show team's offensive and defensive rankings this season"
+    output += "!roster <team>                           - Show team's current roster with player details"
     output += "```"
     await ctx.send(output)
 
