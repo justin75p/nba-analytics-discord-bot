@@ -2,3 +2,4 @@ discord.py
 python-dotenv
 nba_api
 requests-cache
+basketball-reference-scraper

@@ -7,6 +7,7 @@ import requests_cache
 
 from nba_api.stats.endpoints import playergamelog, teaminfocommon, leaguedashteamstats, playerprofilev2, commonteamroster
 from nba_api.stats.static import players, teams
+from basketball_reference_scraper.injury_report import get_injury_report
 
 # Hardcode current season, only needs an update once a year
 CURRENT_SEASON = "2024-25"
@@ -179,6 +180,13 @@ async def team(ctx, *, team_name: str):
     output += "```"
 
     # TODO: Show more advanced stat rankings using LeagueDashTeamStats (in the future)
+    await ctx.send(output)
+
+# Command that shows the injury report of a specified team
+# Uses get_injury_report() from basketball_reference_scraper
+@bot.command()
+async def team_injury_report(ctx, *, team_name: str):
+    output = ""
     await ctx.send(output)
 
 # Command that shows a team's roster of players
