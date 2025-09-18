@@ -130,6 +130,16 @@ async def player_vs(ctx, team: str, *, player_name: str):
     output += "```"
     await ctx.send(output)
 
+# Command that utilizes ARIMA model to predict a player's next performance
+@bot.command()
+async def predict_performance(ctx, *, player_name: str):
+    # Look up the player
+    player = find_active_player(player_name)
+    if not player:
+        await ctx.send(f"Could not find player named {player_name}.")
+        return
+    # TODO: implement prediction logic
+
 # Command that displays a player's stat averages along with their rankings this season
 # Uses PlayerProfileV2 endpoint with SeasonRankingsRegularSeason and SeasonTotalsRegularSeason dataset 
 @bot.command()
