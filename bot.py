@@ -8,6 +8,8 @@ import requests_cache
 from nba_api.stats.endpoints import playergamelog, teaminfocommon, leaguedashteamstats, playerprofilev2, commonteamroster
 from nba_api.stats.static import players, teams
 
+from statsmodels.tsa.arima.model import ARIMA
+
 # Hardcode current season, only needs an update once a year
 CURRENT_SEASON = "2024-25"
 SEASON_TYPE = "Regular Season"
