@@ -49,10 +49,10 @@ async def commands(ctx):
     output += "```"
     await ctx.send(output)
 
-# Command to show a player's points and average over their last N games this season
+# Command to show a player's stats in their last N games
 # Uses PlayerGameLog endpoint
 @bot.command()
-async def points_last(ctx, games: int, *, player_name: str):
+async def player_last(ctx, games: int, *, player_name: str):
     # Look up the player
     player = find_active_player(player_name)
     if not player:
@@ -66,20 +66,34 @@ async def points_last(ctx, games: int, *, player_name: str):
     last_n_games = games_data_frame.head(games)
     if games > 15:
         # Only show average for large requests to avoid long messages
-        await ctx.send(f"```Over the past {min(games, len(last_n_games))} games, {player['full_name']} has averaged {round(last_n_games['PTS'].mean(), 1)} points per game.\n```")
-    else:
+        await ctx.send(f"```{player['full_name']} - Last {min(games, len(last_n_games))} Games Averages:\n"
+                        f"PTS: {last_n_games['PTS'].mean():.1f}  |  "
+                        f"REB: {last_n_games['REB'].mean():.1f}  |  "
+                        f"AST: {last_n_games['AST'].mean():.1f}  |  "
+                        f"FG%: {last_n_games['FG_PCT'].mean():.1%}  |  "
+                        f"3P%: {last_n_games['FG3_PCT'].mean():.1%}\n```")
         # Format the games to display nicely
         output = f"{player['full_name']} - Last {games} Regular Season Games:\n"
-        output += "```\n"
-        output += "Date          Opponent        PTS\n"
-        output += "-" * 33 + "\n"
+        output += "```"
+        output += "Date            PTS   REB   AST   FGM   FGA   FG_PCT   FG3M   FG3A   FG3_PCT   FTM   FTA   FT_PCT\n"
+        output += "-" * 97 + "\n"
 
         for _, game in last_n_games.iterrows():
             date = game['GAME_DATE']
-            matchup = game['MATCHUP']
-            points = game['PTS']
-            output += f"{date}  {matchup:<16}{points:>3}\n"
-        output += f"Over the past {min(games, len(last_n_games))} games, {player['full_name']} has averaged {round(last_n_games['PTS'].mean(), 1)} points per game.\n"
+            pts = game['PTS']
+            reb = game['REB']
+            ast = game['AST']
+            fgm = game['FGM']
+            fga = game['FGA']
+            fg_pct = f"{game['FG_PCT']:.1%}"
+            fg3m = game['FG3M']
+            fg3a = game['FG3A']
+            fg3_pct = f"{game['FG3_PCT']:.1%}"
+            ftm = game['FTM']
+            fta = game['FTA']
+            ft_pct = f"{game['FT_PCT']:.1%}"
+
+            output += f"{date}    {pts:>3}   {reb:>3}   {ast:>3}   {fgm:>3}   {fga:>3}   {fg_pct:>6}   {fg3m:>4}   {fg3a:>4}    {fg3_pct:>6}   {ftm:>3}   {fta:>3}   {ft_pct:>6}\n"
         output += "```"
         await ctx.send(output)
 
