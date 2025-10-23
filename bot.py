@@ -4,6 +4,7 @@ import logging
 from dotenv import load_dotenv
 import os
 import requests_cache
+import pandas as pd
 
 from nba_api.stats.endpoints import playergamelog, teaminfocommon, leaguedashteamstats, playerprofilev2, commonteamroster
 from nba_api.stats.static import players, teams
@@ -263,10 +264,14 @@ def find_active_player(player_name: str):
     # As of 2025, no active players share the exact same names, so return the first player
     return active_players[0]
 
-# Helper method that returns a DataFrame of all games a player has played in the current season.
+# Helper method that returns a DataFrame of all games a player has played in the current and previous season.
 # Uses PlayerGameLog endpoint
 def get_games_played(player_id: int):
     games_this_season = playergamelog.PlayerGameLog(player_id = player_id, season = CURRENT_SEASON, season_type_all_star = SEASON_TYPE)
-    return games_this_season.player_game_log.get_data_frame()
+    games_last_season = playergamelog.PlayerGameLog(player_id = player_id, season = LAST_SEASON, season_type_all_star = SEASON_TYPE)
+
+    current_data = games_this_season.player_game_log.get_data_frame()
+    last_data = games_last_season.player_game_log.get_data_frame()
+    return pd.concat([current_data, last_data])
 
 bot.run(token = token, log_handler = handler, log_level = logging.DEBUG)
