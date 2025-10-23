@@ -11,7 +11,8 @@ from nba_api.stats.static import players, teams
 from statsmodels.tsa.arima.model import ARIMA
 
 # Hardcode current season, only needs an update once a year
-CURRENT_SEASON = "2024-25"
+CURRENT_SEASON = "2025-26"
+LAST_SEASON = "2024-25"
 SEASON_TYPE = "Regular Season"
 
 requests_cache.install_cache('nba_bot_cache', expire_after=3600)
@@ -139,6 +140,7 @@ async def predict_performance(ctx, *, player_name: str):
         await ctx.send(f"Could not find player named {player_name}.")
         return
     # TODO: implement prediction logic
+    
 
 # Command that displays a player's stat averages along with their rankings this season
 # Uses PlayerProfileV2 endpoint with SeasonRankingsRegularSeason and SeasonTotalsRegularSeason dataset 
