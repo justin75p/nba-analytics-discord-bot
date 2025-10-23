@@ -41,7 +41,7 @@ async def echo(ctx, *, arg):
 async def commands(ctx):
     output = "NBA Bot Commands:\n"
     output += "```"
-    output += "!points_last <num_games> <player>        - Show player's points over last N games this season\n"
+    output += "!player_last <num_games> <player>        - Show player's stats over last N games this season\n"
     output += "!player_vs <team> <player>               - Show player's performance vs specific team this season\n"
     output += "!player_stats <player>                   - Show player's overall stat averages and rankings this season\n"
     output += "!team <team>                             - Show team's offensive and defensive rankings this season"
@@ -175,7 +175,16 @@ async def player_stats(ctx, *, player_name: str):
     season_stats = player_profile.season_totals_regular_season.get_data_frame().iloc[0]
     season_rankings = player_profile.season_rankings_regular_season.get_data_frame().iloc[0]
 
-    output = ""
+    output = f"{player['full_name']} - {CURRENT_SEASON} Season Stats:\n"
+    output += "```"
+    output += f"PPG: {season_stats['PTS']:.1f} (Rank: #{season_rankings['PTS']})\n"
+    output += f"RPG: {season_stats['REB']:.1f} (Rank: #{season_rankings['REB']})\n"
+    output += f"APG: {season_stats['AST']:.1f} (Rank: #{season_rankings['AST']})\n"
+    output += f"FG%: {season_stats['FG_PCT']:.1%} (Rank: #{season_rankings['FG_PCT']})\n"
+    output += f"3P%: {season_stats['FG3_PCT']:.1%} (Rank: #{season_rankings['FG3_PCT']})\n"
+    output += f"FT%: {season_stats['FT_PCT']:.1%} (Rank: #{season_rankings['FT_PCT']})\n"
+    output += "```"
+
     await ctx.send(output)    
 
 # Command that shows a team's offensive and defensive stat rankings this season
