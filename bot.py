@@ -154,8 +154,33 @@ async def predict_performance(ctx, *, player_name: str):
     if not player:
         await ctx.send(f"Could not find player named {player_name}.")
         return
-    # TODO: implement prediction logic
-    
+    player_id = player['id']
+    games_df = get_games_played(player_id)
+
+    # Need at least 10 games for prediction
+    if len(games_df) < 10:
+        await ctx.send(f"{player['full_name']} hasn't played enough games yet for prediction.")
+        return
+    # Get player's last 15 games
+    recent_games = games_df.head(15)
+
+    pts_prediction = predict_stat(recent_games['PTS'].values)
+    reb_prediction = predict_stat(recent_games['REB'].values)
+    ast_prediction = predict_stat(recent_games['AST'].values)
+
+    # Format output
+    output = f"{player['full_name']} - Predicted Next Game:\n"
+    output += "```"
+    output += f"PTS: {pts_prediction:.1f}\n"
+    output += f"REB: {reb_prediction:.1f}\n"
+    output += f"AST: {ast_prediction:.1f}\n"
+    output += "```"
+
+    await ctx.send(output)
+
+# Helper function utilizing ARIMA to predict next value for stat  
+def predict_stat(stat_series):
+    return
 
 # Command that displays a player's stat averages along with their rankings this season
 # Uses PlayerProfileV2 endpoint with SeasonRankingsRegularSeason and SeasonTotalsRegularSeason dataset 
