@@ -44,7 +44,7 @@ async def commands(ctx):
     output += "!player_last <num_games> <player>        - Show player's stats over last N games this season\n"
     output += "!player_vs <team> <player>               - Show player's performance vs specific team this season\n"
     output += "!player_stats <player>                   - Show player's overall stat averages and rankings this season\n"
-    output += "!team <team>                             - Show team's offensive and defensive rankings this season"
+    output += "!team <team>                             - Show team's offensive and defensive rankings this season\n"
     output += "!roster <team>                           - Show team's current roster with player details"
     output += "```"
     await ctx.send(output)
@@ -161,19 +161,19 @@ async def predict_performance(ctx, *, player_name: str):
     if len(games_df) < 10:
         await ctx.send(f"{player['full_name']} hasn't played enough games yet for prediction.")
         return
-    # Get player's last 15 games
-    recent_games = games_df.head(15)
+    # Get player's last 10 games
+    recent_games = games_df.head(10)
 
     pts_prediction = predict_stat(recent_games['PTS'].values)
     reb_prediction = predict_stat(recent_games['REB'].values)
     ast_prediction = predict_stat(recent_games['AST'].values)
 
     # Format output
-    output = f"{player['full_name']} - Predicted Next Game:\n"
+    output = f"{player['full_name']} - Predicted Next Game (based on their last 10 games):\n"
     output += "```"
-    output += f"PTS: {pts_prediction:.1f}\n"
-    output += f"REB: {reb_prediction:.1f}\n"
-    output += f"AST: {ast_prediction:.1f}\n"
+    output += f"PTS: {pts_prediction:.1f} (avg last 10: {recent_games['PTS'].mean():.1f})\n"
+    output += f"REB: {reb_prediction:.1f} (avg last 10: {recent_games['REB'].mean():.1f})\n"
+    output += f"AST: {ast_prediction:.1f} (avg last 10: {recent_games['AST'].mean():.1f})\n"
     output += "```"
 
     await ctx.send(output)
@@ -184,7 +184,7 @@ def predict_stat(stat_series):
         # Feed data to model
         model = ARIMA(stat_series, order=(1, 1, 1))
         fitted_model = model.fit()
-        
+
         # Predict stat for next game
         prediction = fitted_model.forecast(steps=1)[0]
         return prediction
