@@ -180,7 +180,17 @@ async def predict_performance(ctx, *, player_name: str):
 
 # Helper function utilizing ARIMA to predict next value for stat  
 def predict_stat(stat_series):
-    return
+    try:
+        # Feed data to model
+        model = ARIMA(stat_series, order=(1, 1, 1))
+        fitted_model = model.fit()
+        
+        # Predict stat for next game
+        prediction = fitted_model.forecast(steps=1)[0]
+        return prediction
+    except:
+        # If ARIMA fails, just return the average
+        return stat_series.mean()
 
 # Command that displays a player's stat averages along with their rankings this season
 # Uses PlayerProfileV2 endpoint with SeasonRankingsRegularSeason and SeasonTotalsRegularSeason dataset 
