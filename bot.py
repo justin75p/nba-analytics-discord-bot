@@ -70,30 +70,30 @@ async def player_last(ctx, games: int, *, player_name: str):
                         f"AST: {last_n_games['AST'].mean():.1f}  |  "
                         f"FG%: {last_n_games['FG_PCT'].mean():.1%}  |  "
                         f"3P%: {last_n_games['FG3_PCT'].mean():.1%}\n```")
-        # Format the games to display nicely
-        output = f"{player['full_name']} - Last {games} Regular Season Games:\n"
-        output += "```"
-        output += "Date            PTS   REB   AST   FGM   FGA   FG_PCT   FG3M   FG3A   FG3_PCT   FTM   FTA   FT_PCT\n"
-        output += "-" * 97 + "\n"
+    # Format the games to display nicely
+    output = f"{player['full_name']} - Last {games} Regular Season Games:\n"
+    output += "```"
+    output += "Date            PTS   REB   AST   FGM   FGA   FG_PCT   FG3M   FG3A   FG3_PCT   FTM   FTA   FT_PCT\n"
+    output += "-" * 97 + "\n"
 
-        for _, game in last_n_games.iterrows():
-            date = game['GAME_DATE']
-            pts = game['PTS']
-            reb = game['REB']
-            ast = game['AST']
-            fgm = game['FGM']
-            fga = game['FGA']
-            fg_pct = f"{game['FG_PCT']:.1%}"
-            fg3m = game['FG3M']
-            fg3a = game['FG3A']
-            fg3_pct = f"{game['FG3_PCT']:.1%}"
-            ftm = game['FTM']
-            fta = game['FTA']
-            ft_pct = f"{game['FT_PCT']:.1%}"
-
-            output += f"{date}    {pts:>3}   {reb:>3}   {ast:>3}   {fgm:>3}   {fga:>3}   {fg_pct:>6}   {fg3m:>4}   {fg3a:>4}    {fg3_pct:>6}   {ftm:>3}   {fta:>3}   {ft_pct:>6}\n"
-        output += "```"
-        await ctx.send(output)
+    for _, game in last_n_games.iterrows():
+        date = game['GAME_DATE']
+        pts = game['PTS']
+        reb = game['REB']
+        ast = game['AST']
+        fgm = game['FGM']
+        fga = game['FGA']
+        fg_pct = f"{game['FG_PCT']:.1%}"
+        fg3m = game['FG3M']
+        fg3a = game['FG3A']
+        fg3_pct = f"{game['FG3_PCT']:.1%}"
+        ftm = game['FTM']
+        fta = game['FTA']
+        ft_pct = f"{game['FT_PCT']:.1%}"
+        output += f"{date}    {pts:>3}   {reb:>3}   {ast:>3}   {fgm:>3}   {fga:>3}   {fg_pct:>6}   {fg3m:>4}   {fg3a:>4}    {fg3_pct:>6}   {ftm:>3}   {fta:>3}   {ft_pct:>6}\n"
+    
+    output += "```"
+    await ctx.send(output)
 
 # Command that shows a player's performance against a specific team this season
 # Uses PlayerGameLog endpoint
