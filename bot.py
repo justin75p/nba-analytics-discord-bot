@@ -6,7 +6,7 @@ import os
 import requests_cache
 import pandas as pd
 
-from nba_api.stats.endpoints import playergamelog, teaminfocommon, leaguedashteamstats, playerprofilev2, commonteamroster
+from nba_api.stats.endpoints import playergamelog, teaminfocommon, leaguedashteamstats, commonteamroster
 from nba_api.stats.static import players, teams
 
 # Hardcode current season, only needs an update once a year
@@ -176,31 +176,30 @@ async def predict_performance(ctx, *, player_name: str):
 # Uses PlayerProfileV2 endpoint with SeasonRankingsRegularSeason and SeasonTotalsRegularSeason dataset 
 @bot.command()
 async def player_stats(ctx, *, player_name: str):
-    # Look up the player
     player = find_active_player(player_name)
     if not player:
         await ctx.send(f"Could not find player named {player_name}.")
         return
     player_id = player['id']
 
-    # Get the player's profile from the endpoint
-    player_profile = playerprofilev2.PlayerProfileV2(player_id=player_id, per_mode36="PerGame")
+    # Fetch only THIS season's games
+    games_df = playergamelog.PlayerGameLog(player_id=player_id, season=CURRENT_SEASON, season_type_all_star=SEASON_TYPE).player_game_log.get_data_frame()
 
-    # Get their season stat averages and stat rankings as DataSets, then convert them to DataFrame
-    season_stats = player_profile.season_totals_regular_season.get_data_frame().iloc[0]
-    season_rankings = player_profile.season_rankings_regular_season.get_data_frame().iloc[0]
+    if games_df.empty:
+        await ctx.send(f"No stats found for {player['full_name']} this season.")
+        return
 
-    output = f"{player['full_name']} - {CURRENT_SEASON} Season Stats:\n"
+    output = f"{player['full_name']} - {CURRENT_SEASON} Season Averages ({len(games_df)} games):\n"
     output += "```"
-    output += f"PPG: {season_stats['PTS']:.1f} (Rank: #{season_rankings['PTS']})\n"
-    output += f"RPG: {season_stats['REB']:.1f} (Rank: #{season_rankings['REB']})\n"
-    output += f"APG: {season_stats['AST']:.1f} (Rank: #{season_rankings['AST']})\n"
-    output += f"FG%: {season_stats['FG_PCT']:.1%} (Rank: #{season_rankings['FG_PCT']})\n"
-    output += f"3P%: {season_stats['FG3_PCT']:.1%} (Rank: #{season_rankings['FG3_PCT']})\n"
-    output += f"FT%: {season_stats['FT_PCT']:.1%} (Rank: #{season_rankings['FT_PCT']})\n"
+    output += f"PPG: {games_df['PTS'].mean():.1f}\n"
+    output += f"RPG: {games_df['REB'].mean():.1f}\n"
+    output += f"APG: {games_df['AST'].mean():.1f}\n"
+    output += f"FG%: {games_df['FG_PCT'].mean():.1%}\n"
+    output += f"3P%: {games_df['FG3_PCT'].mean():.1%}\n"
+    output += f"FT%: {games_df['FT_PCT'].mean():.1%}\n"
     output += "```"
 
-    await ctx.send(output)    
+    await ctx.send(output) 
 
 # Command that shows a team's offensive and defensive stat rankings this season
 # Uses TeamInfoCommon endpoint
